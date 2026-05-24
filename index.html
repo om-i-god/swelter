@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>swelter — design & features</title>
+  <style>
+    :root {
+      --bg:     #0c0a07;
+      --panel:  #14100a;
+      --panel2: #181208;
+      --border: #2e2516;
+      --dim:    #4a3d28;
+      --mid:    #7a6743;
+      --gold:   #d4a72c;
+      --glow:   #ecc25a;
+      --ember:  #c8631e;
+      --text:   #ece2cc;
+      --faint:  #9a8868;
+      --cool:   #6a9a8e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background:
+        radial-gradient(ellipse at 50% -10%, #1c1407 0%, var(--bg) 55%) fixed;
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px 90px;
+    }
+
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { color: var(--glow); }
+
+    /* ── heat-haze shimmer applied to themed elements ── */
+    .haze { filter: url(#heathaze); }
+
+    /* ── HERO ── */
+    .hero { text-align: center; padding: 78px 0 54px; }
+
+    #haze-svg {
+      display: block;
+      margin: 0 auto 30px;
+      width: 240px;
+      height: 150px;
+    }
+
+    h1.title {
+      font-size: 46px;
+      letter-spacing: 0.42em;
+      color: var(--gold);
+      font-weight: normal;
+      line-height: 1;
+      text-indent: 0.42em;
+      text-shadow: 0 0 22px rgba(212,167,44,0.35);
+    }
+    .subtitle {
+      color: var(--faint);
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      margin-top: 14px;
+      text-transform: lowercase;
+    }
+    .meta {
+      color: var(--dim);
+      font-size: 11px;
+      letter-spacing: 0.26em;
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 22px;
+      padding: 18px 0 6px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: lowercase;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+    .nav a { color: var(--mid); }
+    .nav a:hover { color: var(--glow); }
+
+    /* ── SECTIONS ── */
+    .section { padding: 52px 0 8px; }
+    .section-label {
+      color: var(--ember);
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      border-left: 2px solid var(--ember);
+      padding-left: 10px;
+    }
+    p.body { color: var(--text); margin-bottom: 16px; }
+    p.body .accent { color: var(--gold); }
+    .lead { color: var(--faint); font-style: italic; margin-bottom: 26px; }
+
+    /* ── LENS CARDS ── */
+    .lens-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 620px) { .lens-grid { grid-template-columns: 1fr; } }
+
+    .lens-card {
+      background: linear-gradient(160deg, var(--panel2), var(--panel));
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 18px 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .lens-card::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent 0 3px, rgba(0,0,0,0.18) 3px 4px);
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .lens-name {
+      color: var(--gold);
+      font-size: 16px;
+      letter-spacing: 0.14em;
+      text-transform: lowercase;
+    }
+    .lens-optic {
+      color: var(--faint);
+      font-size: 11.5px;
+      font-style: italic;
+      margin: 4px 0 12px;
+    }
+    .lens-row { margin-bottom: 7px; }
+    .lens-tag {
+      display: inline-block;
+      width: 52px;
+      color: var(--mid);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      vertical-align: top;
+    }
+    .lens-val { display: inline-block; width: calc(100% - 58px); }
+    .lens-dsp { color: var(--cool); }
+    .lens-son { color: var(--text); }
+
+    /* ── CHAIN ── */
+    .chain {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 22px 18px;
+      margin-top: 6px;
+    }
+    .chain-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+    .chain-node {
+      border: 1px solid var(--dim);
+      border-radius: 2px;
+      padding: 5px 11px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      background: var(--panel2);
+      white-space: nowrap;
+    }
+    .chain-node.io { border-color: var(--ember); color: var(--glow); }
+    .chain-arrow { color: var(--ember); font-size: 13px; }
+
+    /* ── TABLES ── */
+    table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    th, td {
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      vertical-align: top;
+    }
+    th {
+      color: var(--ember);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: normal;
+    }
+    td.k { color: var(--gold); white-space: nowrap; }
+    td.note { color: var(--faint); }
+
+    /* ── SCREEN MOCK ── */
+    .oled-wrap { text-align: center; margin: 8px 0 18px; }
+    .oled {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      background: #050403;
+    }
+    #oled-svg { display: block; width: 384px; height: 192px; }
+    @media (max-width: 460px) { #oled-svg { width: 256px; height: 128px; } }
+    .caption { color: var(--faint); font-size: 11.5px; text-align: center; }
+
+    /* ── STATUS ── */
+    .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 560px) { .status-grid { grid-template-columns: 1fr; } }
+    .status-card {
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 14px 16px;
+      background: var(--panel);
+    }
+    .status-card h3 {
+      font-size: 12px; letter-spacing: 0.16em; text-transform: lowercase;
+      color: var(--gold); font-weight: normal; margin-bottom: 6px;
+    }
+    .status-card p { color: var(--faint); font-size: 12.5px; }
+    .badge {
+      display: inline-block; font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 2px;
+      border: 1px solid currentColor; margin-left: 6px;
+    }
+    .badge.done { color: var(--cool); }
+    .badge.todo { color: var(--ember); }
+
+    footer {
+      margin-top: 60px; padding-top: 22px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--dim);
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- heat-haze displacement filter, reused by .haze elements -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="heathaze">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06"
+                    numOctaves="2" seed="7" result="noise">
+        <animate attributeName="baseFrequency"
+                 dur="9s" values="0.012 0.06;0.02 0.09;0.012 0.06"
+                 repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <svg id="haze-svg" class="haze" viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+      <!-- low sun -->
+      <circle cx="120" cy="118" r="30" fill="#c8631e" opacity="0.35"/>
+      <circle cx="120" cy="118" r="20" fill="#ecc25a" opacity="0.55"/>
+      <!-- wavering horizon scanlines -->
+      <g stroke="#d4a72c" stroke-width="1" opacity="0.5">
+        <line x1="10" y1="30"  x2="230" y2="30"/>
+        <line x1="10" y1="44"  x2="230" y2="44"/>
+        <line x1="10" y1="58"  x2="230" y2="58"/>
+        <line x1="10" y1="72"  x2="230" y2="72"/>
+        <line x1="10" y1="86"  x2="230" y2="86"/>
+        <line x1="10" y1="100" x2="230" y2="100"/>
+      </g>
+    </svg>
+    <h1 class="title">swelter</h1>
+    <p class="subtitle">a live tape &amp; heat-haze effect for norns</p>
+    <p class="meta">norns · supercollider · 2026</p>
+  </section>
+
+  <!-- ── NAV ── -->
+  <nav class="nav">
+    <a href="#concept">concept</a>
+    <a href="#lenses">six lenses</a>
+    <a href="#chain">signal chain</a>
+    <a href="#controls">controls</a>
+    <a href="#screen">screen</a>
+    <a href="#status">status</a>
+  </nav>
+
+  <!-- ── CONCEPT ── -->
+  <section class="section" id="concept">
+    <p class="section-label">concept</p>
+    <p class="lead">The name of the way light is distorted by heat became the name of the way sound is.</p>
+    <p class="body">
+      Swelter is a <span class="accent">live-input insert effect</span>. Whatever you feed
+      its line-in — an instrument, a mix, a voice — passes through a fixed chain of six
+      <span class="accent">optical lenses</span> that waver, detune, saturate, and age it,
+      then blends back against the dry signal. The engine is the sole path the input takes
+      to the main output, so the wet/dry balance lives entirely under your thumb on E1.
+    </p>
+    <p class="body">
+      The vocabulary is borrowed straight from the physics of a hot horizon. Air over a
+      baking road is less dense, so it bends light unevenly and the world behind it
+      <em>shimmers, doubles, and dissolves</em>. Swelter does the same to sound — each optical
+      term maps onto a concrete piece of DSP.
+    </p>
+  </section>
+
+  <!-- ── SIX LENSES ── -->
+  <section class="section" id="lenses">
+    <p class="section-label">six lenses</p>
+    <div class="lens-grid">
+
+      <div class="lens-card">
+        <p class="lens-name">refraction</p>
+        <p class="lens-optic">light bending as it crosses moving layers of air</p>
+        <div class="lens-row"><span class="lens-tag">dsp</span><span class="lens-val lens-dsp">a delay line modulated by a slow <em>wow</em> LFO summed with a fast <em>flutter</em> LFO; L/R run at offset phase</span></div>
+        <div class="lens-row"><span class="lens-tag">sonic</span><span class="lens-val lens-son">pitch wander — the tape transport breathing, slow drift under fast quiver</span></div>
+      </div>
+
+      <div class="lens-card">
+        <p class="lens-name">heat haze</p>
+        <p class="lens-optic">the shimmering waver hanging over a hot surface</p>
+        <div class="lens-row"><span class="lens-tag">dsp</span><span class="lens-val lens-dsp">a sine↔noise ripple (blend = <em>turbulence</em>) applies an amplitude dip plus a micro pitch ripple at a settable rate</span></div>
+        <div class="lens-row"><span class="lens-tag">sonic</span><span class="lens-val lens-son">a restless, heat-mirage flutter on top of the signal; also drives the screen's shimmer</span></div>
+      </div>
+
+      <div class="lens-card">
+        <p class="lens-name">mirage</p>
+        <p class="lens-optic">an image of something that isn't actually there</p>
+        <div class="lens-row"><span class="lens-tag">dsp</span><span class="lens-val lens-dsp">a parallel pitch-shifted voice, detuned a few cents, summed in and level-normalized</span></div>
+        <div class="lens-row"><span class="lens-tag">sonic</span><span class="lens-val lens-son">a ghost double a hair off-pitch — thickening, chorus-adjacent, slightly unreal</span></div>
+      </div>
+
+      <div class="lens-card">
+        <p class="lens-name">saturation</p>
+        <p class="lens-optic">the literal distortion — the heat in the signal</p>
+        <div class="lens-row"><span class="lens-tag">dsp</span><span class="lens-val lens-dsp">gain-compensated <em>tanh</em> soft-clip, pre-gain set by drive</span></div>
+        <div class="lens-row"><span class="lens-tag">sonic</span><span class="lens-val lens-son">tape warmth into grit — rounded edges first, harmonic dirt as you push</span></div>
+      </div>
+
+      <div class="lens-card">
+        <p class="lens-name">tape age</p>
+        <p class="lens-optic">worn playback, dulled and hissing</p>
+        <div class="lens-row"><span class="lens-tag">dsp</span><span class="lens-val lens-dsp">a low-pass whose cutoff drops with age, plus a summed pink-noise hiss bed</span></div>
+        <div class="lens-row"><span class="lens-tag">sonic</span><span class="lens-val lens-son">highs roll off and a noise floor creeps in — decades of wear on a dial</span></div>
+      </div>
+
+      <div class="lens-card">
+        <p class="lens-name">dropout</p>
+        <p class="lens-optic">creased, shedding tape losing contact with the head</p>
+        <div class="lens-row"><span class="lens-tag">dsp</span><span class="lens-val lens-dsp">random triggers fire short level sags; one knob scales how often and how deep</span></div>
+        <div class="lens-row"><span class="lens-tag">sonic</span><span class="lens-val lens-son">intermittent stumbles in the level, like a worn cassette skipping its grip</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── SIGNAL CHAIN ── -->
+  <section class="section" id="chain">
+    <p class="section-label">signal chain</p>
+    <p class="body">Order follows tape signal flow — record, transport, playback — with the two creative optical layers woven into the middle.</p>
+    <div class="chain">
+      <div class="chain-flow">
+        <span class="chain-node io">in · trim</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">saturation</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">refraction</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">+ mirage</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">heat-haze</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">dropout</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">tape-age</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node">dry/wet</span>
+        <span class="chain-arrow">→</span>
+        <span class="chain-node io">out</span>
+      </div>
+    </div>
+    <p class="caption" style="margin-top:14px">One stereo SuperCollider SynthDef. Every value is smoothed (<em>Lag.kr</em>) so fast knob moves never click.</p>
+  </section>
+
+  <!-- ── CONTROLS ── -->
+  <section class="section" id="controls">
+    <p class="section-label">controls</p>
+    <p class="body">Page-cycled, in the muscle memory of Yarn. <span class="accent">E1</span> is always dry/wet. <span class="accent">K2</span> steps the page; the readout surfaces, then fades. <span class="accent">K3</span> held is momentary bypass for A/B. <span class="accent">K1</span> held lets E2/E3 reach the underlying rates without leaving the play screen.</p>
+    <table>
+      <thead><tr><th>page</th><th>e2</th><th>e3</th><th>k1 + e2</th><th>k1 + e3</th></tr></thead>
+      <tbody>
+        <tr><td class="k">refraction</td><td>wow</td><td>flutter</td><td class="note">wow rate</td><td class="note">flutter rate</td></tr>
+        <tr><td class="k">haze / mirage</td><td>haze</td><td>mirage</td><td class="note">haze rate</td><td class="note">mirage detune</td></tr>
+        <tr><td class="k">tape</td><td>drive</td><td>age</td><td class="note">hiss</td><td class="note">—</td></tr>
+        <tr><td class="k">wear</td><td>dropout</td><td>out trim</td><td class="note">—</td><td class="note">—</td></tr>
+      </tbody>
+    </table>
+    <table style="margin-top:22px">
+      <thead><tr><th>global</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="k">E1</td><td class="note">dry / wet — always live, on every page</td></tr>
+        <tr><td class="k">K2</td><td class="note">cycle to next page (wraps)</td></tr>
+        <tr><td class="k">hold K3</td><td class="note">momentary bypass — full dry while held, for A/B</td></tr>
+        <tr><td class="k">hold K1</td><td class="note">shift — E2/E3 address rate params instead of depth macros</td></tr>
+        <tr><td class="k">PARAMS</td><td class="note">every underlying parameter, for setup and PSET recall</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── SCREEN ── -->
+  <section class="section" id="screen">
+    <p class="section-label">screen</p>
+    <p class="body">128×64, layered. A continuously animating <span class="accent">heat-haze field</span> sits behind everything, its scanlines bending harder as input level and modulation rise. A <span class="accent">param readout</span> surfaces on any encoder or key activity and fades back into the haze after about a second and a half.</p>
+    <div class="oled-wrap">
+      <div class="oled">
+        <svg id="oled-svg" class="haze" viewBox="0 0 128 64" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect width="128" height="64" fill="#050403"/>
+          <!-- haze field -->
+          <g fill="#3a3016">
+            <rect x="0"  y="6"  width="2" height="1"/><rect x="8"  y="6"  width="2" height="1"/><rect x="16" y="6" width="2" height="1"/><rect x="24" y="6" width="2" height="1"/><rect x="32" y="6" width="2" height="1"/><rect x="40" y="6" width="2" height="1"/><rect x="48" y="6" width="2" height="1"/><rect x="56" y="6" width="2" height="1"/><rect x="64" y="6" width="2" height="1"/><rect x="72" y="6" width="2" height="1"/><rect x="80" y="6" width="2" height="1"/><rect x="88" y="6" width="2" height="1"/><rect x="96" y="6" width="2" height="1"/><rect x="104" y="6" width="2" height="1"/><rect x="112" y="6" width="2" height="1"/><rect x="120" y="6" width="2" height="1"/>
+            <rect x="2"  y="16" width="2" height="1"/><rect x="10" y="16" width="2" height="1"/><rect x="18" y="16" width="2" height="1"/><rect x="26" y="16" width="2" height="1"/><rect x="34" y="16" width="2" height="1"/><rect x="42" y="16" width="2" height="1"/><rect x="50" y="16" width="2" height="1"/><rect x="58" y="16" width="2" height="1"/><rect x="66" y="16" width="2" height="1"/><rect x="74" y="16" width="2" height="1"/><rect x="82" y="16" width="2" height="1"/><rect x="90" y="16" width="2" height="1"/><rect x="98" y="16" width="2" height="1"/><rect x="106" y="16" width="2" height="1"/><rect x="114" y="16" width="2" height="1"/><rect x="122" y="16" width="2" height="1"/>
+            <rect x="4"  y="48" width="2" height="1"/><rect x="12" y="48" width="2" height="1"/><rect x="20" y="48" width="2" height="1"/><rect x="28" y="48" width="2" height="1"/><rect x="36" y="48" width="2" height="1"/><rect x="44" y="48" width="2" height="1"/><rect x="52" y="48" width="2" height="1"/><rect x="60" y="48" width="2" height="1"/><rect x="68" y="48" width="2" height="1"/><rect x="76" y="48" width="2" height="1"/><rect x="84" y="48" width="2" height="1"/><rect x="92" y="48" width="2" height="1"/><rect x="100" y="48" width="2" height="1"/><rect x="108" y="48" width="2" height="1"/><rect x="116" y="48" width="2" height="1"/><rect x="124" y="48" width="2" height="1"/>
+          </g>
+          <!-- foreground readout -->
+          <text x="4" y="10" fill="#ece2cc" font-family="monospace" font-size="7">REFRACTION</text>
+          <text x="4" y="30" fill="#ece2cc" font-family="monospace" font-size="6">wow</text>
+          <rect x="4" y="33" width="40" height="5" fill="none" stroke="#4a3d28"/>
+          <rect x="4" y="33" width="22" height="5" fill="#d4a72c"/>
+          <text x="70" y="30" fill="#ece2cc" font-family="monospace" font-size="6">flutter</text>
+          <rect x="70" y="33" width="40" height="5" fill="none" stroke="#4a3d28"/>
+          <rect x="70" y="33" width="13" height="5" fill="#d4a72c"/>
+          <text x="4" y="61" fill="#9a8868" font-family="monospace" font-size="6">d/w 50</text>
+        </svg>
+      </div>
+    </div>
+    <p class="caption">mock — readout visible. Idle, only the haze field remains, wavering.</p>
+  </section>
+
+  <!-- ── STATUS ── -->
+  <section class="section" id="status">
+    <p class="section-label">status</p>
+    <div class="status-grid">
+      <div class="status-card">
+        <h3>design spec <span class="badge done">done</span></h3>
+        <p>Architecture, six-lens chain, command/poll contract, control surface, layered screen. Committed.</p>
+      </div>
+      <div class="status-card">
+        <h3>implementation plan <span class="badge done">done</span></h3>
+        <p>13 bite-sized tasks: engine scaffold, one lens per task, params, UI, screen, on-device playtest.</p>
+      </div>
+      <div class="status-card">
+        <h3>engine + script <span class="badge todo">to build</span></h3>
+        <p><code>lib/Engine_Swelter.sc</code> + <code>swelter.lua</code>, per the plan. Not yet written.</p>
+      </div>
+      <div class="status-card">
+        <h3>on-device playtest <span class="badge todo">pending</span></h3>
+        <p>The real test loop — feed line-in, walk the checklist, tune depths. Awaits code.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>swelter · norns · 2026</footer>
+
+</body>
+</html>
