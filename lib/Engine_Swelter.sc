@@ -78,7 +78,9 @@ Engine_Swelter : CroneEngine {
       sig = DelayC.ar(sig, 0.012,
         (0.002 + (rip * khaze * 0.002)).clip(0, 0.012));         // micro pitch
       hazemod = (rip[0] * khaze).abs;                            // mono -> poll
-      // === DROPOUT ===           (identity — filled in Task 7)
+      // === DROPOUT === random triggers sag the level; dropout scales both
+      // how often (Dust rate) and how deep (env depth)
+      sig = sig * (1 - (EnvGen.kr(Env.perc(0.02, 0.25), Dust.kr(kdrop * 3)) * kdrop)).clip(0, 1);
       // === TAPE-AGE ===          (identity — filled in Task 8)
 
       // dry/wet crossfade (-1 = dry, +1 = wet) + output trim
