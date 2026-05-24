@@ -69,6 +69,17 @@ function init()
   redraw()
 end
 
+local function draw_bar(x, label, id)
+  if not id then return end
+  local spec = params:lookup_param(id).controlspec
+  local v = params:get(id)
+  local norm = (v - spec.minval) / (spec.maxval - spec.minval)
+  screen.level(15)
+  screen.move(x, 30); screen.text(label)
+  screen.level(4); screen.rect(x, 36, 40, 6); screen.stroke()
+  screen.level(15); screen.rect(x, 36, math.floor(40 * util.clamp(norm, 0, 1)), 6); screen.fill()
+end
+
 function redraw()
   screen.clear()
   -- heat-haze field: faint scanlines whose horizontal offset wavers with
@@ -82,6 +93,23 @@ function redraw()
     end
   end
   screen.fill()
+  -- foreground readout: surfaces on activity, fades after 1.5 s
+  if (util.time() - activity) < 1.5 then
+    local p = PAGES[page]
+    screen.level(15)
+    screen.move(4, 10)
+    screen.text(p.name .. (shift and " ·rate" or ""))
+    local e2id = shift and p.e2s or p.e2
+    local e3id = shift and p.e3s or p.e3
+    draw_bar(4,  e2id or "—", e2id)
+    draw_bar(70, e3id or "—", e3id)
+    screen.level(8)
+    screen.move(4, 60)
+    screen.text("d/w " .. math.floor(params:get("drywet") * 100))
+  end
+  if bypass then
+    screen.level(15); screen.move(124, 10); screen.text_right("DRY")
+  end
   screen.update()
 end
 
