@@ -39,6 +39,10 @@ local page = 1
 local shift = false
 local bypass = false
 local activity = 0
+local haze_phase = 0
+local haze_amt = 0
+local amp_in = 0
+local screen_metro
 
 local function add_params()
   params:add_separator("swelter")
@@ -53,14 +57,31 @@ function init()
   audio.level_monitor(0)
   add_params()
   params:bang()
+  local pa = poll.set("amp_in",   function(v) amp_in = v end)
+  pa:start()
+  local ph = poll.set("haze_mod", function(v) haze_amt = v end)
+  ph:start()
+  screen_metro = metro.init(function()
+    haze_phase = haze_phase + 0.15
+    redraw()
+  end, 1/30)
+  screen_metro:start()
   redraw()
 end
 
 function redraw()
   screen.clear()
-  screen.level(4)
-  screen.move(64, 36)
-  screen.text_center("swelter")
+  -- heat-haze field: faint scanlines whose horizontal offset wavers with
+  -- modulation + input level
+  local bend = 2 + (haze_amt * 10) + (amp_in * 12)
+  screen.level(1)
+  for y = 0, 63, 2 do
+    local off = math.sin(haze_phase + (y * 0.3)) * bend
+    for x = 0, 127, 6 do
+      screen.pixel(math.floor((x + off) % 128), y)
+    end
+  end
+  screen.fill()
   screen.update()
 end
 
