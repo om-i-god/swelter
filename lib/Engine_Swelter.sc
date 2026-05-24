@@ -70,7 +70,14 @@ Engine_Swelter : CroneEngine {
       // then level normalized so adding it doesn't blow up gain
       sig = (sig + (PitchShift.ar(sig, 0.2, (kdet / 100).midiratio, 0.01, 0.004) * kmir))
             * (1 / (1 + kmir));
-      // === HEAT-HAZE ===         (identity — filled in Task 6)
+      // === HEAT-HAZE === ripple = sine..noise blend by turbulence; applies an
+      // amplitude dip and a micro pitch ripple, and drives the screen haze poll
+      rip = (SinOsc.kr(haze_rate, [0, 0.5pi]) * (1 - kturb))
+              + (LFNoise2.kr(haze_rate * 4) * kturb);            // ~ -1..1, 2ch
+      sig = sig * (1 - (khaze * 0.4 * ((rip + 1) * 0.5)));        // AM dip
+      sig = DelayC.ar(sig, 0.012,
+        (0.002 + (rip * khaze * 0.002)).clip(0, 0.012));         // micro pitch
+      hazemod = (rip[0] * khaze).abs;                            // mono -> poll
       // === DROPOUT ===           (identity — filled in Task 7)
       // === TAPE-AGE ===          (identity — filled in Task 8)
 
