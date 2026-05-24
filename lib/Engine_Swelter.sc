@@ -32,7 +32,7 @@ Engine_Swelter : CroneEngine {
           dropout=0, age=0, hiss=0,
           slew=0.05;
 
-      var dry, sig, hazemod;
+      var dry, sig, hazemod, rip;
 
       // smoothed controls
       var ktrim  = Lag.kr(trim, slew);
@@ -53,7 +53,9 @@ Engine_Swelter : CroneEngine {
       sig = dry;
       hazemod = DC.kr(0);
 
-      // === SATURATION ===        (identity — filled in Task 3)
+      // === SATURATION === tanh soft-clip; gain-compensated
+      sig = (sig * (1 + (kdrive * 8))).tanh;
+      sig = sig * (1 - (kdrive * 0.35));
       // === REFRACTION ===        (identity — filled in Task 4)
       // === MIRAGE ===            (identity — filled in Task 5)
       // === HEAT-HAZE ===         (identity — filled in Task 6)
