@@ -66,7 +66,10 @@ Engine_Swelter : CroneEngine {
           + (SinOsc.kr(flutter_rate, [0, 0.3pi]) * kflut * 0.0018)
         ).clip(0.0005, 0.055)
       );
-      // === MIRAGE ===            (identity — filled in Task 5)
+      // === MIRAGE === a detuned ghost voice summed in (cents -> ratio),
+      // then level normalized so adding it doesn't blow up gain
+      sig = (sig + (PitchShift.ar(sig, 0.2, (kdet / 100).midiratio, 0.01, 0.004) * kmir))
+            * (1 / (1 + kmir));
       // === HEAT-HAZE ===         (identity — filled in Task 6)
       // === DROPOUT ===           (identity — filled in Task 7)
       // === TAPE-AGE ===          (identity — filled in Task 8)
