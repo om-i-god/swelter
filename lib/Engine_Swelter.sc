@@ -56,7 +56,16 @@ Engine_Swelter : CroneEngine {
       // === SATURATION === tanh soft-clip; gain-compensated
       sig = (sig * (1 + (kdrive * 8))).tanh;
       sig = sig * (1 - (kdrive * 0.35));
-      // === REFRACTION ===        (identity — filled in Task 4)
+      // === REFRACTION === wow (slow) + flutter (fast) modulate a delay time;
+      // [0, x] phase offsets give a stereo (non-mono-locked) wander
+      sig = DelayC.ar(
+        sig,
+        0.06,
+        (0.025
+          + (SinOsc.kr(wow_rate,     [0, 0.5pi]) * kwow  * 0.012)
+          + (SinOsc.kr(flutter_rate, [0, 0.3pi]) * kflut * 0.0018)
+        ).clip(0.0005, 0.055)
+      );
       // === MIRAGE ===            (identity — filled in Task 5)
       // === HEAT-HAZE ===         (identity — filled in Task 6)
       // === DROPOUT ===           (identity — filled in Task 7)
