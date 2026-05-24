@@ -30,11 +30,15 @@ Two files plus the spec:
 
 - **`lib/Engine_Swelter.sc`** — one `CroneEngine` subclass allocating a single
   stereo processing `SynthDef`. The synth reads the audio input with
-  `In.ar([in_l, in_r])` and writes back with `ReplaceOut` to the same input bus,
-  acting as an insert on the norns input → main monitor path (same passthrough
-  position the Crone input chain uses). All six lenses are a **fixed serial chain**
-  inside this one SynthDef. Every controllable value is a SynthDef arg smoothed
-  with `Lag.kr` to avoid zipper noise. Engine commands set those args.
+  `In.ar([in_l, in_r])` and writes to the **engine's own output bus** with
+  `Out.ar` (→ summed to main). The hardware input bus is left untouched; the
+  engine performs its own dry/wet crossfade internally (dry = the input passed
+  straight through, wet = the processed chain). To avoid doubling the dry path,
+  `swelter.lua` mutes the norns hardware input monitor on init
+  (`audio.level_monitor(0)`), so the engine is the sole path the input reaches the
+  main output through. All six lenses are a **fixed serial chain** inside this one
+  SynthDef. Every controllable value is a SynthDef arg smoothed with `Lag.kr` to
+  avoid zipper noise. Engine commands set those args.
 
 - **`swelter.lua`** — `engine.name = "Swelter"`; param definitions
   (`params:add_control` + `set_action` → `engine.*`, the Yarn glue pattern); the
@@ -91,7 +95,7 @@ in → trim
    → Tape-age     LPF rolloff (cutoff set by `age`, more age = lower cutoff)
                   + summed pink-ish hiss at `hiss` level
    → dry/wet      crossfade wet against the untouched input, `drywet`
-   → out_trim → ReplaceOut
+   → out_trim → Out.ar (engine output → main)
 ```
 
 Stereo throughout. The wow/flutter/haze LFOs run per-channel with a small phase
