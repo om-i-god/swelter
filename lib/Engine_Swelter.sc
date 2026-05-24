@@ -81,7 +81,9 @@ Engine_Swelter : CroneEngine {
       // === DROPOUT === random triggers sag the level; dropout scales both
       // how often (Dust rate) and how deep (env depth)
       sig = sig * (1 - (EnvGen.kr(Env.perc(0.02, 0.25), Dust.kr(kdrop * 3)) * kdrop)).clip(0, 1);
-      // === TAPE-AGE ===          (identity — filled in Task 8)
+      // === TAPE-AGE === age lowers the LPF cutoff; hiss adds a pink noise bed
+      sig = LPF.ar(sig, LinExp.kr(kage, 0, 1, 18000, 2500));
+      sig = sig + (PinkNoise.ar([1, 1]) * khiss * 0.04);
 
       // dry/wet crossfade (-1 = dry, +1 = wet) + output trim
       sig = XFade2.ar(dry, sig, (kwet * 2) - 1) * kout;
