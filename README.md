@@ -27,8 +27,8 @@ that waver, detune, saturate, and age it, then blend back against the dry signal
 
 - ✅ Design spec — [`docs/superpowers/specs/`](docs/superpowers/specs/)
 - ✅ Implementation plan (13 tasks) — [`docs/superpowers/plans/`](docs/superpowers/plans/)
-- ⏳ Engine (`lib/Engine_Swelter.sc`) + script (`swelter.lua`) — to build
-- ⏳ On-device playtest
+- ✅ Engine (`lib/Engine_Swelter.sc`) + script (`swelter.lua`) — built & reviewed
+- ⏳ On-device playtest — load on norns (SYSTEM > RESTART) and tune by ear
 
 **Browsable design & features:** open [`swelter-devlog.html`](swelter-devlog.html) in a browser.
 
